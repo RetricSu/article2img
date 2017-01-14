@@ -106,7 +106,7 @@ def string2List(ustring):
 
 Margin = 50            #边距
 
-list = [u'？',u'。',u'，',u'！',u'：',u'"',u'～',u'.',u',',u'；',u'”']   #标点符号
+list = [u'？',u'。',u'，',u'！',u'：',u'"',u'～',u'.',u',',u'；',u'”',u'、']   #标点符号
 
 sum = 0
 
@@ -128,14 +128,14 @@ def AutoWordWrap ( text1 , str):
 		
 		str.append(text1[n * 20 :n * 20 + 20])
 		
-
-	for n  in range(0,sum+1):
-		for x in list :
+	#自动把句首标点放在上一句的末尾
+	for n  in range(0,sum):
+		for l in range(0,0) :
 		
 			if n == sum :
 
 				
-				if  str[n][0] == x :
+				if  str[n][0] in list :
 					#print "n=sum"
 					#print str[n-1]
 					str[n-1] = str[n-1][0:20]+str[n][0]
@@ -145,7 +145,7 @@ def AutoWordWrap ( text1 , str):
 			else :
 				#print (sum,n)
 				#print str[n]
-				if  str[n+1][0] == x :
+				if  str[n+1][0] in list :
 					str[n]=str[n]+str[n+1][0]
 					str[n+1] = str[n+1][1:20]
 					#print ("n!=sum", str[n])
@@ -156,11 +156,50 @@ def AutoWordWrap ( text1 , str):
 							
 							str[i] = str[i][1:20]+str[i+1][0]
 						#print i
-			
+						
+	#判断有没有字母或者英文字符，调整每行的总数字
+	for i in range(0,sum-1):
+		needtofill = 0
+		for j in range(0,len(str[i])):
+			if is_number(str[i][j]) :
+				needtofill = needtofill+1
+		if needtofill/2 == 0:
+			pass
+		else:
+			str[i]=str[i]+str[i+1][0:needtofill/2]
+			print str[i]
+			for k in range(i+1,sum-1):
+				str[k] = str[k][needtofill/2:20]+str[k+1][0:needtofill/2]
 
-	#自动把句首标点放在上一句的末尾	 
-			
+	#自动把句首标点放在上一句的末尾
+	for n  in range(0,sum):
+		
+		
+		if n == sum:
 
+				
+			if  str[n][0] in list :
+				#print "n=sum"
+				#print str[n-1]
+				str[n-1] = str[n-1][0:len(str[n-1])]+str[n][0]
+				str[n] = str[n][1:len(str[n])]
+				#print str[n-1]
+
+		else :
+			#print (sum,n)
+			#print n+1
+			if  str[n+1][0] in list :
+				str[n]=str[n]+str[n+1][0]
+				str[n+1] = str[n+1][1:len(str[n+1])]
+				#print ("n!=sum", str[n])
+				for i in range(n+1,sum):
+					if i == n+1:
+						str[i] = str[i]+str[i+1][0]
+					else : 
+						
+						str[i] = str[i][1:len(str[i])]+str[i+1][0]
+					#print i
+				
 
 def AutoRender (title) :
 
@@ -215,11 +254,6 @@ def AutoRender (title) :
 			sum = int(len(linetext)/20)+1
 	
 		for n  in range(0,sum):
-		
-			
-				
-		
-		
 			
 			
 			font = pygame.font.Font(TheFont,20)
